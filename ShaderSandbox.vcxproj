@@ -152,6 +152,8 @@
     <ClCompile Include="Dependencies\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="Dependencies\STB\stb_image.cpp" />
     <ClCompile Include="Dependencies\STB\stb_image_write.cpp" />
+    <ClCompile Include="Source\ShaderProgram.cpp" />
+    <ClCompile Include="Source\ScreenQuad.cpp" />
     <ClCompile Include="Source\Renderer.cpp" />
     <ClCompile Include="Source\main.cpp" />
   </ItemGroup>
@@ -172,7 +174,13 @@
     <ClInclude Include="Dependencies\ImGui\imstb_truetype.h" />
     <ClInclude Include="Dependencies\STB\stb_image.h" />
     <ClInclude Include="Dependencies\STB\stb_image_write.h" />
+    <ClInclude Include="Source\ShaderProgram.h" />
+    <ClInclude Include="Source\ScreenQuad.h" />
     <ClInclude Include="Source\Renderer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Source\Shaders\default.frag" />
+    <None Include="Source\Shaders\default.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

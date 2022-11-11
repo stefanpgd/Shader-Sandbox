@@ -1,10 +1,11 @@
 #include "Renderer.h"
-
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-
 #include <chrono>
+
+#include "ShaderProgram.h"
+#include "ScreenQuad.h"
 
 static void GLFWErrorCallback(int error, const char* description)
 {
@@ -20,7 +21,7 @@ Renderer::Renderer()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(720, 480, "Shader Sandbox", NULL, NULL);
+	window = glfwCreateWindow(windowWidth, windowHeight, "Shader Sandbox", NULL, NULL);
 	glfwMakeContextCurrent(window);
 
 	// Initialize GLAD // 
@@ -30,7 +31,7 @@ Renderer::Renderer()
 		return;
 	}
 
-	glViewport(0, 0, 720, 480);
+	glViewport(0, 0, windowWidth, windowHeight);
 
 	// Initialize ImGui // 
 	IMGUI_CHECKVERSION();
@@ -52,6 +53,9 @@ Renderer::Renderer()
 
 void Renderer::Run()
 {
+	shader = new ShaderProgram("default.vert", "default.frag");
+	screenQuad = new ScreenQuad();
+
 	static float deltaTime = 0.0f;
 	static std::chrono::high_resolution_clock clock;
 	static auto t0 = std::chrono::time_point_cast<std::chrono::milliseconds>((clock.now())).time_since_epoch();
@@ -89,12 +93,16 @@ void Renderer::StartFrame()
 
 void Renderer::Update(float deltaTime)
 {
+	elaspedTime += deltaTime;
 	ProcessInput(window);
 }
 
 void Renderer::Render()
 {
-	// render to screen quad
+	shader->Bind();
+	shader->SetFloat("time", elaspedTime);
+
+	screenQuad->Render();
 
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
