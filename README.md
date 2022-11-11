@@ -1,4 +1,4 @@
-# Shader-Sandbox
+# Shader Sandbox
 A small environment to try out different compute and pixel shaders
 
 ### Why?
