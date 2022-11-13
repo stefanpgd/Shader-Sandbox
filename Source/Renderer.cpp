@@ -101,6 +101,7 @@ void Renderer::Render()
 {
 	shader->Bind();
 	shader->SetFloat("time", elaspedTime);
+	shader->SetVec2("resolution", windowWidth, windowHeight);
 
 	screenQuad->Render();
 
