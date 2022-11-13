@@ -43,9 +43,19 @@ float sdfScene(vec3 p)
     HitInfo hit;
 
     float circle =  sdfCircle(p, vec3(0.0, (cos(time) + 0.5) * 1.15, 0.0), 0.5);
-    float box = sdfBox(p, vec3(0.0, -0.5, 0.0), vec3(2, 1, 1));
+    float circle2 =  sdfCircle(p, vec3(cos(time) * 0.25, 0.7, sin(time) * 1.5), 0.2);
+    float box = sdfBox(p, vec3(0.0, -0.5, 0.0), vec3(2, 1, 3));
 
-    return smoothMin(box, circle, 1);
+    float c = smoothMin(box, circle2, 0.8);
+    return c;
+}
+
+vec3 estimateNormal(vec3 p) {
+    return normalize(vec3(
+        sdfScene(vec3(p.x + EPSILON, p.y, p.z)) - sdfScene(vec3(p.x - EPSILON, p.y, p.z)),
+        sdfScene(vec3(p.x, p.y + EPSILON, p.z)) - sdfScene(vec3(p.x, p.y - EPSILON, p.z)),
+        sdfScene(vec3(p.x, p.y, p.z  + EPSILON)) - sdfScene(vec3(p.x, p.y, p.z - EPSILON))
+    ));
 }
 
 float shortestDistanceToSurface(vec3 eye, vec3 marchingDirection, float start, float end) {
@@ -81,9 +91,10 @@ void main()
     }
     
     vec3 point = eye + dist * dir;
+    vec3 normal = estimateNormal(point);
     vec3 lightDir = vec3(0.0, -0.6, -0.1);
     lightDir = normalize(lightDir);
-    float diffStrength = dot(normalize(point), -lightDir);
+    float diffStrength = dot(normal, -lightDir);
     vec3 color = vec3(uv.x, uv.y, 0) * diffStrength * 2.5;
     FragColor = vec4(color, 1.0);
 }
