@@ -4,9 +4,9 @@ out vec4 FragColor;
 uniform float time;
 uniform vec2 resolution;
 
-const int MAX_MARCHING_STEPS = 255;
+const int MAX_MARCHING_STEPS = 1000;
 const float MIN_DIST = 0.0;
-const float MAX_DIST = 100.0;
+const float MAX_DIST = 10000.0;
 const float EPSILON = 0.0001;
 
 struct HitInfo 
@@ -14,12 +14,21 @@ struct HitInfo
     vec3 point;
     float dist;
     vec3 color;
-
 } Hit;
 
 float sdfCircle(vec3 p, vec3 position, float radius) 
 {
     return length(position - p) - radius;
+}
+
+float circle(vec3 p, float radius) 
+{
+    return length(p) - radius;
+}
+
+float repCircle(vec3 p, vec3 offset, float radius) {
+    vec3 q = mod(p + 0.5 * offset, offset) - 0.5 * offset;
+    return circle(q, radius);
 }
 
 float sdfBox(vec3 p, vec3 position, vec3 size) 
@@ -41,12 +50,10 @@ float smoothMax(float a, float b, float k) {
 float sdfScene(vec3 p) 
 {
     HitInfo hit;
+    float circle2 =  repCircle(p, vec3(3 + cos(time), 2, 3), 0.005 + sin(time) * 0.003);
+    float circle3 =  repCircle(p, vec3(3.5, 3.5, 3.5), 0.0025);
 
-    float circle =  sdfCircle(p, vec3(0.0, (cos(time) + 0.5) * 1.15, 0.0), 0.5);
-    float circle2 =  sdfCircle(p, vec3(cos(time) * 0.25, 0.7, sin(time) * 1.5), 0.2);
-    float box = sdfBox(p, vec3(0.0, -0.5, 0.0), vec3(2, 1, 3));
-
-    float c = smoothMin(box, circle2, 0.8);
+    float c = smoothMin(circle2, circle3, ((cos(time / 6) + 1) * 0.5) * 7);
     return c;
 }
 
@@ -82,19 +89,22 @@ vec3 rayDirection(float fieldOfView, vec2 size, vec2 fragCoord) {
 void main()
 {
     vec3 dir = rayDirection(45.0, resolution, gl_FragCoord.xy);
-    vec3 eye = vec3(0, 1, 5);
+    vec3 eye = vec3(cos(time) * 1.5, sin(time) * 1.5, 5);
     float dist = shortestDistanceToSurface(eye, dir, MIN_DIST, MAX_DIST);
     
     if (dist > MAX_DIST - EPSILON) {
-        FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+        FragColor = vec4(0.2, 0.2, 1.0, 1.0);
 		return;
     }
     
     vec3 point = eye + dist * dir;
     vec3 normal = estimateNormal(point);
-    vec3 lightDir = vec3(0.0, -0.6, -0.1);
+    vec3 lightDir = vec3(0.3, -0.8, -0.0);
     lightDir = normalize(lightDir);
     float diffStrength = dot(normal, -lightDir);
-    vec3 color = vec3(uv.x, uv.y, 0) * diffStrength * 2.5;
-    FragColor = vec4(color, 1.0);
+
+    vec3 color = mix(vec3(0.2, 0.9, 0.157), vec3(1.0, 1.0, 1.0), (cos(time) + 1.0) * 0.5);
+    float depth = gl_FragCoord.z / gl_FragCoord.w;
+
+    FragColor = vec4(color, 1.0) * 1.0 / dist * (30 * (cos(time / 2) + 1.0) * 0.5 + 0.2);
 }
