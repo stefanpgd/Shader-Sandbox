@@ -9,13 +9,6 @@ const float MIN_DIST = 0.0;
 const float MAX_DIST = 10000.0;
 const float EPSILON = 0.0001;
 
-struct HitInfo 
-{
-    vec3 point;
-    float dist;
-    vec3 color;
-} Hit;
-
 float sdfCircle(vec3 p, vec3 position, float radius) 
 {
     return length(position - p) - radius;
@@ -49,8 +42,7 @@ float smoothMax(float a, float b, float k) {
 
 float sdfScene(vec3 p) 
 {
-    HitInfo hit;
-    float circle2 =  repCircle(p, vec3(3 + cos(time), 2, 3), 0.005 + sin(time) * 0.003);
+    float circle2 =  repCircle(p, vec3(3 + cos(time) * 0.5, 2, 3), 0.005 + sin(time) * 0.003);
     float circle3 =  repCircle(p, vec3(3.5, 3.5, 3.5), 0.0025);
 
     float c = smoothMin(circle2, circle3, ((cos(time / 6) + 1) * 0.5) * 7);
@@ -89,7 +81,7 @@ vec3 rayDirection(float fieldOfView, vec2 size, vec2 fragCoord) {
 void main()
 {
     vec3 dir = rayDirection(45.0, resolution, gl_FragCoord.xy);
-    vec3 eye = vec3(cos(time) * 1.5, sin(time) * 1.5, 5);
+    vec3 eye = vec3(cos(time) * 1.5, sin(time) * 1.5, -time * 10);
     float dist = shortestDistanceToSurface(eye, dir, MIN_DIST, MAX_DIST);
     
     if (dist > MAX_DIST - EPSILON) {
@@ -106,5 +98,5 @@ void main()
     vec3 color = mix(vec3(0.2, 0.9, 0.157), vec3(1.0, 1.0, 1.0), (cos(time) + 1.0) * 0.5);
     float depth = gl_FragCoord.z / gl_FragCoord.w;
 
-    FragColor = vec4(color, 1.0) * 1.0 / dist * (30 * (cos(time / 2) + 1.0) * 0.5 + 0.2);
+    FragColor = vec4(color, 1.0) * 1.0 / dist * (30 * (cos(time / 2) + 1.0) * 0.5 + 0.5);
 }
