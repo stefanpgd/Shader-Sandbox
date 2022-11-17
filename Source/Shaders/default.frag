@@ -4,10 +4,12 @@ out vec4 FragColor;
 uniform float time;
 uniform vec2 resolution;
 
-const int MAX_MARCHING_STEPS = 1000;
+const int MAX_MARCHING_STEPS = 500;
 const float MIN_DIST = 0.0;
-const float MAX_DIST = 10000.0;
-const float EPSILON = 0.0001;
+const float MAX_DIST = 5000.0;
+const float EPSILON = 0.001;
+
+int steps = 0;
 
 float sdfCircle(vec3 p, vec3 position, float radius) 
 {
@@ -65,6 +67,7 @@ float shortestDistanceToSurface(vec3 eye, vec3 marchingDirection, float start, f
 			return depth;
         }
         depth += dist;
+
         if (depth >= end) {
             return end;
         }
@@ -85,7 +88,7 @@ void main()
     float dist = shortestDistanceToSurface(eye, dir, MIN_DIST, MAX_DIST);
     
     if (dist > MAX_DIST - EPSILON) {
-        FragColor = vec4(0.2, 0.2, 1.0, 1.0);
+        FragColor = vec4(0.1 * steps, 0.0, 0.0, 1.0);
 		return;
     }
     

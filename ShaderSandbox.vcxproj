@@ -181,6 +181,7 @@
   <ItemGroup>
     <None Include="Source\Shaders\default.frag" />
     <None Include="Source\Shaders\default.vert" />
+    <None Include="Source\Shaders\rayGlow.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

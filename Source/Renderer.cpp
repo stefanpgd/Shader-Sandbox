@@ -53,7 +53,7 @@ Renderer::Renderer()
 
 void Renderer::Run()
 {
-	shader = new ShaderProgram("default.vert", "default.frag");
+	shader = new ShaderProgram("default.vert", "rayGlow.frag");
 	screenQuad = new ScreenQuad();
 
 	static float deltaTime = 0.0f;
